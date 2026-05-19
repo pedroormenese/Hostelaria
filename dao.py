@@ -51,7 +51,7 @@ class Database:
             return cursor.lastrowid #Retorna o ID da última ação
             
         except Error as e:
-            if self.cnx.is_connected:
+            if self.cnx.is_connected():
                 self.cnx.rollback() #Voltar para a "versão anterior" do banco antes da ação
             print(f"Não foi possível executar a ação.\nErro: {e}")
 
@@ -67,13 +67,14 @@ class Database:
         try:
 
             cursor = self.cnx.cursor(dictionary=True) 
-            cursor.fetchall(query, params or ())
-            self.cnx.commit() 
+            cursor.execute(query, params or ())
 
-            return cursor
+            result = cursor.fetchall()
+
+            return result
             
         except Error as e:
-            if self.cnx.is_connected:
+            if self.cnx.is_connected():
                 self.cnx.rollback()
             print(f"Não foi possível executar a ação.\nErro: {e}")
 
@@ -88,15 +89,16 @@ class Database:
     def fetchOne(self, query, params=None): #Use quando você quer pegar apenas uma informação do banco de dados, como um cliente específico ou uma reserva específica
         try:
 
-            if self.cnx.is_connected:
+            if self.cnx.is_connected():
                 cursor = self.cnx.cursor(dictionary=True) 
                 cursor.execute(query, params or ()) 
-                self.cnx.commit() 
 
-                return cursor
+                result = cursor.fetchone()
+
+                return result
             
         except Error as e:
-            if self.cnx.is_connected:
+            if self.cnx.is_connected():
                 self.cnx.rollback() 
             print(f"Não foi possível executar a ação.\nErro: {e}")
 

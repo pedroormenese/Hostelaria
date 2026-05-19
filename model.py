@@ -1,6 +1,6 @@
 # Queries Banco de Dados
 
-from dao import Database
+from dao import *
 
 
 '''
@@ -10,8 +10,10 @@ from dao import Database
 '''
 
 class Hospede:
+
     def __init__(self):
         self.db = Database()
+        self.cnx = None
 
     
     # ================================================ Adicionar Hóspede
@@ -19,7 +21,7 @@ class Hospede:
         if not nome or len(nome) < 3:
             raise ValueError("Erro. Nome deve ter ao menos 3 caracteres.")
         
-        if not cpf or len(cpf) != 11 or cpf.isdigit():
+        if not cpf or len(cpf) != 11 or not cpf.isdigit():
             raise ValueError("CPF inválido.")
         
         query = f'''
@@ -63,14 +65,15 @@ class Hospede:
     
     # ================================================ Listar Hóspedes
     def listHospede(self):
-        query = f'''
+        query = '''
                 SELECT * FROM Hospedes
                 '''
+
         self.db.connect()
-        result = self.db.fetchAll(query)
+        values = self.db.fetchAll(query)
         self.db.disconnect()
 
-        return result
+        return values
     
 
     # ================================================ Buscar Hóspede por ID
@@ -322,9 +325,11 @@ class Reserva:
         query = f'''
                 SELECT * FROM Reservas
                 '''
-        self.db.conenct()
-        self.db.fetchAll(query)
+        self.db.connect()
+        result = self.db.fetchAll(query)
+
         self.db.disconnect()
+        return result
 
 
     # ================================================ Buscar Reserva por ID
@@ -335,5 +340,7 @@ class Reserva:
                     id = {id}
                 '''
         self.db.connect()
-        self.db.fetchOne(query)
+        result = self.db.fetchOne(query)
+
         self.db.disconnect()
+        return result

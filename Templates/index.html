@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <h1>Sistema de Hotelaria</h1>
+    
+    {% if hospedes %}
+        {% for h in hospedes %}
+            <div>
+                <p><strong>ID:</strong> {{ h["id"] }}</p>
+                <p><strong>Nome:</strong> {{ h["nome"] }}</p>
+                <p><strong>Email:</strong> {{ h["email"] }}</p>
+                <p><strong>Telefone:</strong> {{ h["telefone"] }}</p>
+                <p><strong>CPF:</strong> {{ h["cpf"] }}</p>
+            </div>
+            <hr>
+        {% endfor %}
+    {% else %}
+        <p>Nenhum hóspede encontrado.</p>
+    {% endif %}
+
+</body>
+</html>
