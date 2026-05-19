@@ -221,25 +221,28 @@ class Reserva:
                         WHERE
                             id = '{quartoId}'
                         '''
-        self.db.connect()
+        try:
+            self.db.connect()
 
-        if data_Entrada >= data_Saida:
-            raise ValueError("A data de saída deve ser maior que a de entrada")
+            if data_Entrada >= data_Saida:
+                raise ValueError("A data de saída deve ser maior que a de entrada")
 
-        treatments = [hospedeTreatment, quartoTreatment]
-        auth = True
-        for treatment in treatments:
-            errorTreatment = self.db.fetchOne(treatment)
-            if errorTreatment == None:
-                auth = False # id do quarto ou hospede nao existe
+            treatments = [hospedeTreatment, quartoTreatment]
+            auth = True
+            for treatment in treatments:
+                errorTreatment = self.db.fetchOne(treatment)
+                if errorTreatment == None:
+                    auth = False # id do quarto ou hospede nao existe
+            
+            if auth == True:
+                result = self.db.executeQuery(query)
+            else:
+                raise ValueError("Não foi possível criar a reserva. Hóspede ou Quarto não existem ou estão indisponíveis no momento.")
+            
+            return result
         
-        if auth == True:
-            result = self.db.executeQuery(query)
-        else:
-            raise ValueError("Não foi possível criar a reserva. Hóspede ou Quarto não existem ou estão indisponíveis no momento.")
-        
-        self.db.disconnect()
-        return result
+        finally:
+            self.db.disconnect()
 
     
     # ================================================ Remover Reserva
@@ -265,3 +268,72 @@ class Reserva:
         
         self.db.disconnect()
         return result
+    
+
+    # ================================================ Editar reserva
+    def updReserva(self, reservaId, hospedeId, quartoId, data_Entrada, data_Saida):
+        query = f'''
+                UPDATE Reservas
+                SET
+                    hospede_id = {hospedeId},
+                    quarto_id = {quartoId},
+                    data_entrada = {data_Entrada},
+                    data_saida = {data_Saida}
+                WHERE
+                    id = {reservaId}
+                '''
+        hospedeTreatment = f'''
+                            SELECT * FROM Hospedes
+                            WHERE
+                                id = '{hospedeId}'
+                            '''
+        
+        quartoTreatment = f'''
+                        SELECT * FROM Quartos
+                        WHERE
+                            id = '{quartoId}'
+                        '''
+        try:
+            self.db.connect()
+
+            if data_Entrada >= data_Saida:
+                raise ValueError("A data de saída deve ser maior que a de entrada")
+
+            treatments = [hospedeTreatment, quartoTreatment]
+            auth = True
+            for treatment in treatments:
+                errorTreatment = self.db.fetchOne(treatment)
+                if errorTreatment == None:
+                    auth = False # id do quarto ou hospede nao existe
+            
+            if auth == True:
+                result = self.db.executeQuery(query)
+            else:
+                raise ValueError("Não foi possível editar a reserva. Hóspede ou Quarto não existem ou estão indisponíveis no momento.")
+            
+            return result
+        
+        finally:
+            self.db.disconnect()
+
+    
+    # ================================================ Listar Reserva
+    def listReservas(self):
+        query = f'''
+                SELECT * FROM Reservas
+                '''
+        self.db.conenct()
+        self.db.fetchAll(query)
+        self.db.disconnect()
+
+
+    # ================================================ Buscar Reserva por ID
+    def getReservaById(self, reservaId):
+        query = f'''
+                SELECT * FROM Reservas
+                WHERE
+                    id = {id}
+                '''
+        self.db.connect()
+        self.db.fetchOne(query)
+        self.db.disconnect()
